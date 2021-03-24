@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 GIT_ROOT=$(git rev-parse --show-toplevel)
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
 PROJECT_ENV="${GIT_ROOT}/project.env"
+DOCKERFILE="${SCRIPT_DIR}/tf_tools.dockerfile"
+
 CONTAINER_NAME=$(basename "${GIT_ROOT}")
 CONTAINER_VERSION="latest"
 CONTAINER_TAG="${CONTAINER_NAME}:${CONTAINER_VERSION}"
@@ -14,6 +18,7 @@ echo "Sourcing project env ${PROJECT_ENV}"
 source ${PROJECT_ENV}
 
 echo "GIT_ROOT         : ${GIT_ROOT}"
+echo "SCRIPT_DIR       : ${SCRIPT_DIR}"
 echo "CONTAINER_NAME   : ${CONTAINER_NAME}"
 echo "CONTAINER_VERSION: ${CONTAINER_VERSION}"
 echo "CONTAINER_TAG    : ${CONTAINER_TAG}"
@@ -31,10 +36,11 @@ case "$1" in
       --build-arg GROUP_NAME="${GROUP_NAME}" \
       --build-arg AWS_PROFILE="${AWS_PROFILE}" \
       --tag "${CONTAINER_TAG}" \
+      --file "${DOCKERFILE}" \
       "${GIT_ROOT}"
     ;;
   run)
-    CONTAINER_ID=$(docker ps -q -f name=disaster-recovery)
+    CONTAINER_ID=$(docker ps -q -f name="${CONTAINER_NAME}")
     if [[ -n ${CONTAINER_ID} ]]; then
       echo "Running inside existing container ${CONTAINER_ID}"
       docker exec \
