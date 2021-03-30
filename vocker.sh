@@ -5,14 +5,14 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_ENV="${GIT_ROOT}/project.env"
 DOCKERFILE="${SCRIPT_DIR}/tf_tools.dockerfile"
 
+USER_NAME="$(id -un)"
+GROUP_NAME="$(id -gn)"
+
 CONTAINER_NAME=$(basename "${GIT_ROOT}")
 CONTAINER_VERSION="latest"
 CONTAINER_TAG="${CONTAINER_NAME}:${CONTAINER_VERSION}"
-CONTAINER_HOME="/opt/${CONTAINER_NAME}"
+CONTAINER_HOME="/opt/${USER_NAME}"
 CONTAINER_SHELL="bash"
-
-USER_NAME="$(id -un)"
-GROUP_NAME="$(id -gn)"
 
 echo "Sourcing project env ${PROJECT_ENV}"
 source ${PROJECT_ENV}
